@@ -1,0 +1,25 @@
+---
+# General Handlers
+- name: reload systemd config
+  command: systemctl daemon-reload
+
+# Config Server
+- name: restart mongod-cs
+  service: name=mongod-cs state=restarted
+
+- name: start mongod-cs
+  service: name=mongod-cs state=started
+
+# Query Router
+- name: restart mongos-qr
+  service: name=mongos-qr state=restarted
+
+- name: start mongos-qr
+  service: name=mongos-qr state=started
+
+# Shard Node
+- name: restart mongod-sn
+  service: name=mongod-sn state=restarted
+
+- name: start mongod-sn
+  service: name=mongod-sn state=started

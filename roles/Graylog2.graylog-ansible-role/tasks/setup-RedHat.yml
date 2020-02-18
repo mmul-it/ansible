@@ -1,0 +1,9 @@
+---
+
+# Something broken with this task
+#
+#- name: Update repositories
+#  yum: '{{ graylog_yum_rpm_url }}' state=present update_cache=yes validate_certs=no
+
+- name: Install Graylog server
+  yum: name=graylog-server state=present

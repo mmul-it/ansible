@@ -1,0 +1,22 @@
+---
+# defaults file for graylog-server
+
+graylog_server_user: 'graylog'
+graylog_server_group: 'graylog'
+graylog_server_rest_listen_ip: '0.0.0.0'
+graylog_server_rest_listen_port: '12900'
+graylog_server_web_enabled: 'true'
+graylog_server_web_listen_ip: '0.0.0.0'
+graylog_server_web_listen_port: '9000'
+graylog_server_es_discovery_zen_ping_multicast_enabled: 'false'
+graylog_server_is_master: false
+graylog_server_plugin_dir: '/usr/share/graylog-server/plugin'
+graylog_server_timezone: 'UTC'
+graylog_server_message_journal_dir: '/var/lib/graylog-server/journal'
+graylog_server_processbuffer_processors: 5
+graylog_server_outputbuffer_processors: 3
+graylog_server_outputbuffer_processor_keep_alive_time: 5000
+graylog_server_outputbuffer_processor_threads_core_pool_size: 3
+graylog_server_outputbuffer_processor_threads_max_pool_size: 30
+graylog_server_min_heap: '1g'
+graylog_server_max_heap: '1g'
