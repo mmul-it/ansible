@@ -1,4 +1,11 @@
 ---
 
 - name: Install python pip
-  yum: name=python-pip state=present
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install python pip
+  package:
+    name: python-pip
+    state: present

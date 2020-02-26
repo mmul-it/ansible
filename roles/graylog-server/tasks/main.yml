@@ -52,6 +52,7 @@
     group: root
     mode: 0644
   notify: restart graylog server
+
 - name: Copy plugin file to the Graylog Server Plugin dir
   copy:
     src: "{{ item }}"
@@ -60,8 +61,3 @@
   with_fileglob:
     - files/plugin/*
   notify: restart graylog server
-- name: Start Graylog Server
-  service:
-    name: graylog-server
-    state: started
-    enabled: yes

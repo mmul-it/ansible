@@ -1,0 +1,5 @@
+rs.initiate( { _id: "graylog-shard-rs0", members: [ { _id: 0, host: "{{ graylog_mongo_master_node }}:{{ mongodb_sn_port }}" } ] })
+
+{% for node in es_cluster_interconnect_nodes.split(',') -%}
+rs.add("{{ node.strip() }}:{{ mongodb_sn_port }}")
+{% endfor %}

@@ -5,3 +5,4 @@
   service:
     name: graylog-server
     state: restarted
+    enabled: yes

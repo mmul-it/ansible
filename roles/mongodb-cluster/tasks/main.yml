@@ -52,13 +52,13 @@
     force: yes
   notify: reload systemd config
 
-- name: Start MongoDB Config Server
-  service:
-    name: mongod-cs
-    state: started
-    enabled: yes
-  tags:
-    - mongodb-cluster
+  #- name: Start MongoDB Config Server
+  #  service:
+  #    name: mongod-cs
+  #    state: started
+  #    enabled: yes
+  #  tags:
+  #    - mongodb-cluster
 
 ## Query Router
 - name: Copy Query Router Configuration File
@@ -83,14 +83,14 @@
     force: yes
   notify: reload systemd config
 
-- name: Start MongoDB Query Router
-  service:
-    name: mongos-qr
-    state: started
-    enabled: yes
-  tags:
-    - mongodb-cluster
-
+  #- name: Start MongoDB Query Router
+  #  service:
+  #    name: mongos-qr
+  #    state: started
+  #    enabled: yes
+  #  tags:
+  #    - mongodb-cluster
+  
 ## Shard Node
 - name: Copy Shard Node Configuration File
   template:
@@ -114,11 +114,11 @@
     force: yes
   notify: reload systemd config
 
-- name: Start MongoDB Shard Node
-  service:
-    name: mongod-sn
-    state: started
-    enabled: yes
-  tags:
-    - mongodb-cluster
-
+  #- name: Start MongoDB Shard Node
+  #  service:
+  #    name: mongod-sn
+  #    state: started
+  #    enabled: yes
+  #  tags:
+  #    - mongodb-cluster
+  #

@@ -5,10 +5,10 @@ graylog_server_user: 'graylog'
 graylog_server_group: 'graylog'
 graylog_server_rest_listen_ip: '0.0.0.0'
 graylog_server_rest_listen_port: '12900'
-graylog_server_web_enabled: 'true'
+graylog_server_web_enabled: true
 graylog_server_web_listen_ip: '0.0.0.0'
 graylog_server_web_listen_port: '9000'
-graylog_server_es_discovery_zen_ping_multicast_enabled: 'false'
+graylog_server_es_discovery_zen_ping_multicast_enabled: false
 graylog_server_is_master: false
 graylog_server_plugin_dir: '/usr/share/graylog-server/plugin'
 graylog_server_timezone: 'UTC'

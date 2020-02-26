@@ -1,0 +1,19 @@
+## File managed by Ansible
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+# Frontend
+## IP
+192.168.122.24   graylog-vip-1
+192.168.122.25   graylog-vip-2
+
+# Backend
+## IP
+192.168.122.21  graylog-1
+192.168.122.22  graylog-2
+192.168.122.23  graylog-3
+
+## Interconnect IP
+192.168.122.21	graylog-1-int
+192.168.122.22	graylog-2-int
+192.168.122.23	graylog-3-int

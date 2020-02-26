@@ -1,0 +1,34 @@
+# New Graylog Environment
+[graylog]
+graylog-1
+graylog-2
+graylog-3
+
+[graylog:vars]
+# SELinux
+selinux_state='permissive'
+selinux_policy='targeted'
+selinux_force_reboot=false
+
+# Backend servers (ElasticSearch + Graylog Server + MongoDB)
+[be-graylog]
+graylog-1 interconnect_name='graylog-1-int' interconnect_addr='192.168.122.21' graylog_server_is_master=true server_weight=1 graylog_server_inputbuffer_size=65536
+graylog-2 interconnect_name='graylog-2-int' interconnect_addr='192.168.122.22'                               server_weight=3 graylog_server_inputbuffer_size=65536
+graylog-3 interconnect_name='graylog-3-int' interconnect_addr='192.168.122.23'                               server_weight=3
+
+[be-graylog:vars]
+graylog_mongo_master_node='graylog-1-int'
+es_cluster_interconnect_nodes='graylog-1-int, graylog-2-int, graylog-3-int'
+graylog_es_cluster_interconnect_nodes='graylog-1-int:9300,graylog-2-int:9300,graylog-3-int:9300'
+mdb_replica_set_nodes="graylog-1-int:{{ mongodb_cs_port }},graylog-2-int:{{ mongodb_cs_port }},graylog-3-int:{{ mongodb_cs_port }}"
+graylog_mdb_qr_set_nodes="graylog-1-int:{{ mongodb_qr_port }},graylog-2-int:{{ mongodb_qr_port}},graylog-3-int:{{ mongodb_qr_port }}"
+graylog_server_inputbuffer_size=524288
+
+# Frontend servers (VIP + Graylog Web + ClusterControl)
+[fe-graylog]
+graylog-1 keepalived_vrrp_priority=110
+graylog-2 keepalived_vrrp_priority=100
+graylog-3 keepalived_vrrp_priority=120
+
+[fe-graylog:vars]
+graylog_vips=['192.168.122.24/24','192.168.122.25/24']
