@@ -1,0 +1,6 @@
+cidr_v: 172.16.0.0/16
+
+kubernetes_master_node: kubernetes-1
+kubernetes_master_port: 6443
+
+local_token_file: ./kubernetes_token
