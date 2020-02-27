@@ -29,13 +29,6 @@ graylog_vips=['192.168.122.24/24','192.168.122.25/24']
 
 # Kubernetes hosts
 [kubernetes_nodes]
-kubernetes-1
-kubernetes-2
-kubernetes-3
-
-[kubernetes_master_nodes]
-kubernetes-1
-
-[kubernetes_worker_nodes]
-kubernetes-2
-kubernetes-3
+kubernetes-1 k8s_role=master run_non_infra_pods=true
+kubernetes-2 k8s_role=worker
+kubernetes-3 k8s_role=worker
