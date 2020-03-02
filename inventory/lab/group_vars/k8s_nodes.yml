@@ -1,0 +1,4 @@
+cidr_v: 172.16.0.0/16
+
+k8s_master_node: kubernetes-1
+k8s_master_port: 6443

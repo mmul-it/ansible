@@ -4,12 +4,6 @@ graylog-1
 graylog-2
 graylog-3
 
-[graylog:vars]
-# SELinux
-selinux_state='permissive'
-selinux_policy='targeted'
-selinux_force_reboot=false
-
 # Backend servers (ElasticSearch + Graylog Server + MongoDB)
 [be-graylog]
 graylog-1 interconnect_name='graylog-1-int' interconnect_addr='192.168.122.21' graylog_server_is_master=true server_weight=1 graylog_server_inputbuffer_size=65536
@@ -32,3 +26,9 @@ graylog-3 keepalived_vrrp_priority=120
 
 [fe-graylog:vars]
 graylog_vips=['192.168.122.24/24','192.168.122.25/24']
+
+# Kubernetes hosts
+[k8s_nodes]
+kubernetes-1 k8s_role=master run_non_infra_pods=true
+kubernetes-2 k8s_role=worker
+kubernetes-3 k8s_role=worker
