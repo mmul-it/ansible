@@ -5,12 +5,12 @@ graylog-2
 graylog-3
 
 # Backend servers (ElasticSearch + Graylog Server + MongoDB)
-[be-graylog]
-graylog-1 interconnect_name='graylog-1-int' interconnect_addr='192.168.122.21' graylog_server_is_master=true server_weight=1 graylog_server_inputbuffer_size=65536
-graylog-2 interconnect_name='graylog-2-int' interconnect_addr='192.168.122.22'                               server_weight=3 graylog_server_inputbuffer_size=65536
-graylog-3 interconnect_name='graylog-3-int' interconnect_addr='192.168.122.23'                               server_weight=3
+[graylog_backend]
+graylog-1 interconnect_name='graylog-1-int' interconnect_addr='192.168.122.21' server_weight=1 graylog_server_inputbuffer_size=65536 graylog_server_is_master=true
+graylog-2 interconnect_name='graylog-2-int' interconnect_addr='192.168.122.22' server_weight=3 graylog_server_inputbuffer_size=65536
+graylog-3 interconnect_name='graylog-3-int' interconnect_addr='192.168.122.23' server_weight=3
 
-[be-graylog:vars]
+[graylog_backend:vars]
 graylog_mongo_master_node='graylog-1-int'
 es_cluster_interconnect_nodes='graylog-1-int, graylog-2-int, graylog-3-int'
 graylog_es_cluster_interconnect_nodes='graylog-1-int:9300,graylog-2-int:9300,graylog-3-int:9300'
@@ -19,12 +19,12 @@ graylog_mdb_qr_set_nodes="graylog-1-int:{{ mongodb_qr_port }},graylog-2-int:{{ m
 graylog_server_inputbuffer_size=524288
 
 # Frontend servers (VIP + Graylog Web + ClusterControl)
-[fe-graylog]
+[graylog_frontend]
 graylog-1 keepalived_vrrp_priority=110
 graylog-2 keepalived_vrrp_priority=100
 graylog-3 keepalived_vrrp_priority=120
 
-[fe-graylog:vars]
+[graylog_frontend:vars]
 graylog_vips=['192.168.122.24/24','192.168.122.25/24']
 
 # Kubernetes hosts

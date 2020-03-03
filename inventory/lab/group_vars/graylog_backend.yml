@@ -1,0 +1,61 @@
+---
+
+# Configurations for ElasticSearch cluster
+es_version: "2.4.5"
+es_cluster_name: "graylog-es-cluster"
+es_instance_name: "graylog-es-cluster1"
+es_scripts: False
+es_templates: False
+es_version_lock: False
+es_heap_size: 256m
+es_data_dirs: "/store/elasticsearch/data"
+es_log_dir: "/store/elasticsearch/log"
+es_work_dir: "/store/elasticsearch/tmp"
+es_bulk_queue_size: -1
+
+es_config: {
+  discovery.zen.ping.unicast.hosts: "{{ es_cluster_interconnect_nodes }}",
+  cluster.name: "graylog-es-cluster",
+  network.host: "{{ ansible_eth0.ipv4.address }}, _local_",
+  transport.host: "{{ interconnect_addr }}",
+  discovery.zen.ping.multicast.enabled: false,
+  http.port: 9200,
+  transport.tcp.port: 9300,
+  node.data: true,
+  node.master: true,
+  bootstrap.mlockall: false,
+  index.number_of_shards: 3,
+  index.number_of_replicas: 3
+}
+
+# Configurations for MongoDB cluster
+# Config Server
+mongodb_cs_bind_ip: "{{ interconnect_addr }}"
+mongodb_cs_logpath: "/store/mongodb/cs/log"
+mongodb_cs_dbpath: "/store/mongodb/cs/data"
+mongodb_cs_replica_set_name: "configReplSet"
+# Query Router
+mongodb_qr_bind_ip: "{{ interconnect_addr }}"
+mongodb_qr_logpath: "/store/mongodb/qr/log"
+mongodb_qr_rs_nodes: "{{ mdb_replica_set_nodes }}"
+# Shard Node
+mongodb_sn_bind_ip: "{{ interconnect_addr }}"
+mongodb_sn_logpath: "/store/mongodb/sn/log"
+mongodb_sn_dbpath: "/store/mongodb/sn/data"
+mongodb_sn_replica_set_name: "graylog-shard-rs0"
+
+# Configurations for Graylog Server
+graylog_server_rest_listen_ip: "{{ ansible_eth0.ipv4.address }}"
+graylog_server_web_listen_ip: "{{ ansible_eth0.ipv4.address }}"
+graylog_server_timezone: 'Europe/Rome'
+graylog_server_elasticsearch_cluster_name: "{{ es_cluster_name }}"
+graylog_server_elasticsearch_discovery_zen_ping_unicast_hosts: "{{ es_cluster_interconnect_nodes }}"
+graylog_server_mongodb_uri: "mongodb://{{ graylog_mdb_qr_set_nodes }}/graylog"
+graylog_server_message_journal_dir: '/store/graylog/journal'
+#graylog_server_processbuffer_processors: 32
+#graylog_server_outputbuffer_processors: 156
+#graylog_server_outputbuffer_processor_keep_alive_time: 5000
+#graylog_server_outputbuffer_processor_threads_core_pool_size: 36
+#graylog_server_outputbuffer_processor_threads_max_pool_size: 156
+#graylog_server_min_heap: '2048m'
+#graylog_server_max_heap: '2048m'

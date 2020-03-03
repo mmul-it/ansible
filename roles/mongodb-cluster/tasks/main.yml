@@ -91,7 +91,7 @@
     - name: Push mongo-check-rs.js
       copy:
         dest: 'mongo-check-rs.js'
-        src: 'mongo/mongo-check-rs.js'
+        src: 'mongo-check-rs.js'
 
     # Mongo CS - Config Server
     - name: "Check for port {{ mongodb_cs_port }} on {{ graylog_mongo_master_node }} to be accessible"

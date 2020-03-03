@@ -1,25 +1,44 @@
 ---
 # General Handlers
 - name: reload systemd config
-  command: systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
 
 # Config Server
 - name: restart mongod-cs
-  service: name=mongod-cs state=restarted enabled=yes
+  service:
+    name: mongod-cs
+    state: restarted
+    enabled: yes
 
 - name: start mongod-cs
-  service: name=mongod-cs state=started enabled=yes
+  service:
+    name: mongod-cs
+    state: started
+    enabled: yes
 
 # Query Router
 - name: restart mongos-qr
-  service: name=mongos-qr state=restarted enabled=yes
+  service:
+    name: mongos-qr
+    state: restarted
+    enabled: yes
 
 - name: start mongos-qr
-  service: name=mongos-qr state=started enabled=yes
+  service:
+    name: mongos-qr
+    state: started
+    enabled: yes
 
 # Shard Node
 - name: restart mongod-sn
-  service: name=mongod-sn state=restarted enabled=yes
+  service:
+    name: mongod-sn
+    state: restarted
+    enabled: yes
 
 - name: start mongod-sn
-  service: name=mongod-sn state=started enabled=yes
+  service:
+    name: mongod-sn
+    state: started
+    enabled: yes

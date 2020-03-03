@@ -1,6 +1,4 @@
 ---
-# This role install and configure the graylog-server
-- include_vars: ../../mongodb-cluster/defaults/main.yml
 
 - name: Required Variables Check
   include_tasks: check_variables.yml
