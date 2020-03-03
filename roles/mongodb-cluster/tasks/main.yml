@@ -1,16 +1,9 @@
 ---
-# This role deploys the mongodb processes and sets up settings.
 
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
-  tags:
-    - mongodb-cluster
 
-- include_tasks: setup-RedHat.yml
-  when: ansible_os_family == 'RedHat'
-
-- include_tasks: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+- include_tasks: "setup-{{ ansible_os_family }}.yml"
 
 - name: Create Directories
   file:
@@ -26,10 +19,8 @@
     - "{{ mongodb_sn_dbpath }}"
     - "{{ mongodb_sn_logpath  }}"
     - "{{ mongodb_sn_pidfilepath }}"
-  tags:
-    - mongodb-cluster
 
-## Config Server
+# Config Server
 - name: Copy Config Server Configuration File
   template:
     src: mongod-cs.conf.j2
@@ -39,8 +30,6 @@
     mode: 0644
     force: yes
   notify: restart mongod-cs
-  tags:
-    - mongodb-cluster
 
 - name: Copy Config Server Systemd Service
   template:
@@ -52,15 +41,7 @@
     force: yes
   notify: reload systemd config
 
-  #- name: Start MongoDB Config Server
-  #  service:
-  #    name: mongod-cs
-  #    state: started
-  #    enabled: yes
-  #  tags:
-  #    - mongodb-cluster
-
-## Query Router
+# Query Router
 - name: Copy Query Router Configuration File
   template:
     src: mongos-qr.conf.j2
@@ -70,8 +51,6 @@
     mode: 0644
     force: yes
   notify: restart mongos-qr
-  tags:
-    - mongodb-cluster
 
 - name: Copy Query Router Systemd Service
   template:
@@ -83,15 +62,7 @@
     force: yes
   notify: reload systemd config
 
-  #- name: Start MongoDB Query Router
-  #  service:
-  #    name: mongos-qr
-  #    state: started
-  #    enabled: yes
-  #  tags:
-  #    - mongodb-cluster
-  
-## Shard Node
+# Shard Node
 - name: Copy Shard Node Configuration File
   template:
     src: mongod-sn.conf.j2
@@ -101,8 +72,6 @@
     mode: 0644
     force: yes
   notify: restart mongod-sn
-  tags:
-    - mongodb-cluster
 
 - name: Copy Shard Node Systemd Service
   template:
@@ -114,11 +83,104 @@
     force: yes
   notify: reload systemd config
 
-  #- name: Start MongoDB Shard Node
-  #  service:
-  #    name: mongod-sn
-  #    state: started
-  #    enabled: yes
-  #  tags:
-  #    - mongodb-cluster
-  #
+# Mongo configurations
+- name: Flushing all pending handlers before creating Mongo specific configuratons
+  meta: flush_handlers
+
+- block:
+    - name: Push mongo-check-rs.js
+      copy:
+        dest: 'mongo-check-rs.js'
+        src: 'mongo/mongo-check-rs.js'
+
+    # Mongo CS - Config Server
+    - name: "Check for port {{ mongodb_cs_port }} on {{ graylog_mongo_master_node }} to be accessible"
+      wait_for:
+        host: "{{ graylog_mongo_master_node }}"
+        port: "{{ mongodb_cs_port }}"
+        state: started
+        delay: 5
+
+    - name: Create Config Server cs.js file
+      template:
+        dest: 'cs.js'
+        src: 'mongo/cs.js.j2'
+
+    - name: Check if Mongo Config Server is already active
+      shell: |
+        mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_cs_port }} --quiet mongo-check-rs.js
+      register: mongo_initial_cs_status
+      changed_when: false
+      failed_when: false
+
+    - block:
+        - name: Create Config Server in Mongo
+          shell: |
+            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_cs_port }} < cs.js
+
+        - name: Check Mongo Config Server status
+          shell: |
+            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_cs_port }} --quiet mongo-check-rs.js
+          register: mongo_cs_status
+          changed_when: false
+          until: mongo_cs_status.stdout == 'OK'
+          retries: 5
+          delay: 5
+      when:
+        - mongo_initial_cs_status.stdout != 'OK'
+
+    # Mongo SN - Shard Node
+    - name: "Check for port {{ mongodb_sn_port }} on {{ graylog_mongo_master_node }} to be accessible"
+      wait_for:
+        host: "{{ graylog_mongo_master_node }}"
+        port: "{{ mongodb_sn_port }}"
+        state: started
+        delay: 5
+
+    - name: Create Shard node sn.js file
+      template:
+        dest: 'sn.js'
+        src: 'mongo/sn.js.j2'
+
+    - name: Check if Mongo Shard Node is already active
+      shell: |
+        mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_sn_port }} --quiet mongo-check-rs.js
+      register: mongo_initial_sn_status
+      changed_when: false
+      failed_when: false
+
+    - block:
+        - name: Create Shard Node in Mongo
+          shell: |
+            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_sn_port }} < sn.js
+
+        - name: Check Mongo Shard Node status
+          shell: |
+            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_sn_port }} --quiet mongo-check-rs.js
+          register: mongo_sn_status
+          changed_when: false
+          until: mongo_sn_status.stdout == 'OK'
+          retries: 5
+          delay: 5
+      when:
+        - mongo_initial_sn_status.stdout != 'OK'
+
+    # Mongo QR - Query Router
+    - name: "Check for port {{ mongodb_qr_port }} on {{ graylog_mongo_master_node }} to be accessible"
+      wait_for:
+        host: "{{ graylog_mongo_master_node }}"
+        port: "{{ mongodb_qr_port }}"
+        state: started
+        delay: 5
+
+    - name: Create qr.js file
+      template:
+        dest: 'qr.js'
+        src: 'mongo/qr.js.j2'
+
+    - name: Create Mongo QR - Query Router
+      shell: |
+        mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_qr_port }} --quiet qr.js
+  when:
+    - graylog_server_is_master is defined
+    - graylog_server_is_master|bool
