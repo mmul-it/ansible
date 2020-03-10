@@ -6,7 +6,7 @@
 - fail: msg="es_proxy_port must be specified and cannot be blank when es_proxy_host is defined"
   when: (es_proxy_port is not defined or es_proxy_port == '') and (es_proxy_host is defined and es_proxy_host != '')
 
-- set_fact: multi_cast={{ (es_version | version_compare('2.0', '<') and es_config['discovery.zen.ping.multicast.enabled'] is not defined) or (es_config['discovery.zen.ping.multicast.enabled'] is defined and es_config['discovery.zen.ping.multicast.enabled'])}}
+- set_fact: multi_cast={{ (es_version is version('2.0', '<') and es_config['discovery.zen.ping.multicast.enabled'] is not defined) or (es_config['discovery.zen.ping.multicast.enabled'] is defined and es_config['discovery.zen.ping.multicast.enabled'])}}
 
 - debug: msg="WARNING - It is recommended you specify the parameter 'http.port' when multicast is disabled"
   when: not multi_cast and es_config['http.port'] is not defined
@@ -23,7 +23,7 @@
 
 #Don't support xpack on versions < 2.0
 - fail: msg="Use of the xpack notation is not supported on versions < 2.0.  Marvel-agent and watcher can be installed as plugins.  Version > 2.0 is required for shield."
-  when: es_enable_xpack and es_version | version_compare('2.0', '<')
+  when: es_enable_xpack and es_version is version('2.0', '<')
 
 #Check if working with shield we have an es_api_basic_auth_username and es_api_basic_auth_username - otherwise any http calls wont work
 - fail: msg="Enabling shield requires an es_api_basic_auth_username and es_api_basic_auth_password to be provided to allow cluster operations"
@@ -41,7 +41,7 @@
 #Relies on elasticsearch distribution installing a serviced script to determine whether one should be copied.
 
 
-- set_fact: use_system_d={{(ansible_distribution == 'Debian' and ansible_distribution_version | version_compare('8', '>=')) or (ansible_distribution == 'CentOS' and ansible_distribution_version | version_compare('7', '>=')) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version | version_compare('15', '>=')) }}
+- set_fact: use_system_d={{(ansible_distribution == 'Debian' and ansible_distribution_version is version('8', '>=')) or (ansible_distribution == 'CentOS' and ansible_distribution_version is version('7', '>=')) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('15', '>=')) }}
 
 - set_fact: instance_sysd_script={{sysd_script | dirname }}/{{es_instance_name}}_{{sysd_script | basename}}
   when: use_system_d

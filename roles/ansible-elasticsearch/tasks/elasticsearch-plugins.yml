@@ -8,10 +8,10 @@
 - set_fact: list_command="list"
 
 - set_fact: list_command="--list"
-  when: es_version | version_compare('2.0', '<')
+  when: es_version is version('2.0', '<')
 
 #List currently installed plugins - ignore xpack if > v 2.0
-- shell: "{{es_home}}/bin/plugin {{list_command}} | sed -n '1!p' | cut -d '-' -f2-{% if es_version | version_compare('2.0', '>') %} | grep -vE '{{supported_xpack_features | join('|')}}|license'{% endif %}"
+- shell: "{{es_home}}/bin/plugin {{list_command}} | sed -n '1!p' | cut -d '-' -f2-{% if es_version is version('2.0', '>') %} | grep -vE '{{supported_xpack_features | join('|')}}|license'{% endif %}"
   register: installed_plugins
   failed_when: "'ERROR' in installed_plugins.stdout"
   changed_when: False

@@ -17,7 +17,7 @@ WorkingDirectory={{es_home}}
 User={{es_user}}
 Group={{es_group}}
 
-{% if es_version | version_compare('2.0', '>=') %}
+{% if es_version is version('2.0', '>=') %}
 ExecStartPre=/usr/share/elasticsearch/bin/elasticsearch-systemd-pre-exec
 {% endif %}
 
