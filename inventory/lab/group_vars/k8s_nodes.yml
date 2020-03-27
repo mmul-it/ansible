@@ -1,3 +1,15 @@
 k8s_master_node: kubernetes-1
 k8s_master_port: 6443
 k8s_cidr: 172.16.0.0/16
+
+k8s_users:
+  - name: pod-viewer
+    namespace: default
+    role_name: pod-viewer-role
+    role_rules_apigroups: '""'
+    role_rules_resources: '"pods","pods/exec","pods/log"'
+    role_rules_verbs: '"*"'
+    rolebinding_name: pod-viewer-rolebinding
+    cert_path: 'kubernetes/pod-viewer/ssl'
+    cert_expire_days: 3650
+    update_kube_config: true
