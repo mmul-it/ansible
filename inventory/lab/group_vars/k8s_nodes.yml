@@ -13,3 +13,15 @@ k8s_users:
     cert_path: 'kubernetes/pod-viewer/ssl'
     cert_expire_days: 3650
     update_kube_config: true
+
+k8s_ceph_csi_enable: true
+k8s_ceph_csi_release: v2.0.1
+k8s_ceph_csi_id: lab-ceph
+k8s_ceph_csi_secret_userid: kubernetes
+k8s_ceph_csi_secret_userkey: AQC73I5eDKLgLBAACUqUv3qbHBqtmwG1aK8MJw==
+k8s_ceph_csi_clusterid: f5042dcf-f02f-4e47-a4fa-d4acb614c94a
+k8s_ceph_csi_pool: kubepool
+k8s_ceph_csi_monitors:
+  - 192.168.122.11:6789
+  - 192.168.122.12:6789
+  - 192.168.122.13:6789
