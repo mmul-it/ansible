@@ -1,0 +1,218 @@
+{% for vm in groups[group.key] %}
+# {{ vm }} - {{ hostvars[vm].internal_ip }}, {{ hostvars[vm].vm_size }}
+{% if hostvars[vm].disks is defined %}
+{% for disk in hostvars[vm].disks %}
+# - {{ disk.name }} {{ disk.size }}GB
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+# NIC creation blocks
+{% for vm in groups[group.key] %}
+{% set vm_basename = vm.split('.')[0] %}
+# Set primary_ip {{ vm }}
+resource "azurerm_network_interface" "vm_nic1_{{ vm_basename }}" {
+  name                  = "nic1_{{ vm_basename }}"
+  resource_group_name   = azurerm_resource_group.{{ azure_resource_group_name }}.name
+  location              = azurerm_resource_group.{{ azure_resource_group_name }}.location
+
+  ip_configuration {
+    name                          = "ip1_{{ vm_basename }}"
+    subnet_id                     = azurerm_subnet.{{ hostvars[vm].subnet }}.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "{{ hostvars[vm].internal_ip }}"
+  }
+{% if hostvars[vm].azure_tags is defined %}
+
+  tags = {
+{% for key,value in hostvars[vm].azure_tags.items() %}
+    {{ key }} = "{{ value }}"
+{% endfor %}
+  }
+{% endif %}
+}
+
+# Set Security Group to NIC
+resource "azurerm_network_interface_security_group_association" "{{ vm_basename }}_nic1_to_{{ azure_network_sec_group_name }}" {
+  network_interface_id      = azurerm_network_interface.vm_nic1_{{ vm_basename }}.id
+  network_security_group_id = azurerm_network_security_group.{{ azure_network_sec_group_name }}.id
+}
+
+{% if hostvars[vm].secondary_ip is defined %}
+# Set secondary_ip {{ vm }}
+resource "azurerm_network_interface" "vm_nic2_{{ vm_basename }}" {
+  name                = "nic2_{{ vm_basename }}"
+  resource_group_name = azurerm_resource_group.{{ azure_resource_group_name }}.name
+  location            = azurerm_resource_group.{{ azure_resource_group_name }}.location
+
+  ip_configuration {
+    name                          = "ip2_{{ vm_basename }}"
+    subnet_id                     = azurerm_subnet.{{ hostvars[vm].alternative_subnet }}.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "{{ hostvars[vm].secondary_ip }}"
+  }
+{% if hostvars[vm].azure_tags is defined %}
+
+  tags = {
+{% for key,value in hostvars[vm].azure_tags.items() %}
+    {{ key }} = "{{ value }}"
+{% endfor %}
+  }
+{% endif %}
+}
+{% endif %}
+
+{% endfor %}
+
+# Virtual machine creation blocks
+{% for vm in groups[group.key] %}
+{% set vm_basename = vm.split('.')[0] %}
+{% if hostvars[vm].osdisk_encrypt is defined and hostvars[vm].osdisk_encrypt | bool and azure_key_vault_enable | bool %}
+
+# Encryption Set for VM OS disk
+resource "azurerm_disk_encryption_set" "osdisk_{{ vm_basename }}_encrypted" {
+  name                  = "osdisk_{{ vm_basename }}_encrypted"
+  resource_group_name   = azurerm_resource_group.{{ azure_resource_group_name }}.name
+  location              = azurerm_resource_group.{{ azure_resource_group_name }}.location
+  key_vault_key_id      = azurerm_key_vault_key.{{ azure_key_vault_keyname }}.id
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+# Policy to authorize encrypted
+resource "azurerm_key_vault_access_policy" "osdisk_{{ vm_basename }}" {
+  key_vault_id = azurerm_key_vault.{{ azure_key_vault_name }}.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_disk_encryption_set.osdisk_{{ vm_basename }}_encrypted.identity[0].principal_id
+
+  key_permissions = [
+    "get",
+    "wrapkey",
+    "unwrapkey",
+  ]
+}
+
+{% endif %}
+
+# {{ vm }} resource block
+resource "azurerm_linux_virtual_machine" "{{ vm_basename }}" {
+  name                         = "{{ vm_basename }}"
+  size                         = "{{ hostvars[vm].vm_size }}"
+  resource_group_name          = azurerm_resource_group.{{ azure_resource_group_name }}.name
+  location                     = azurerm_resource_group.{{ azure_resource_group_name }}.location
+{% if hostvars[vm].osdisk_encrypt is defined and hostvars[vm].osdisk_encrypt | bool and azure_key_vault_enable | bool %}
+  depends_on                   = [azurerm_key_vault_access_policy.osdisk_{{ vm_basename }}]
+{% endif %}
+{% if hostvars[vm].secondary_ip is defined %}
+  network_interface_ids        = [azurerm_network_interface.vm_nic1_{{ vm_basename }}.id, azurerm_network_interface.vm_nic2_{{ vm_basename }}.id]
+{% else %}
+  network_interface_ids        = [azurerm_network_interface.vm_nic1_{{ vm_basename }}.id]
+{% endif %}
+
+  os_disk {
+    name                   = "osdisk_{{ vm_basename }}"
+    caching                = "ReadWrite"
+    storage_account_type   = "Standard_LRS"
+    disk_size_gb           = "{{ hostvars[vm].osdisk_size }}"
+{% if hostvars[vm].osdisk_encrypt is defined and hostvars[vm].osdisk_encrypt | bool and azure_key_vault_enable | bool %}
+    disk_encryption_set_id = azurerm_disk_encryption_set.osdisk_{{ vm_basename }}_encrypted.id
+{% endif %}
+  }
+
+  source_image_reference {
+    publisher = "{{ azure_vm_image.publisher }}"
+    offer     = "{{ azure_vm_image.offer }}"
+    sku       = "{{ azure_vm_image.sku }}"
+    version   = "{{ azure_vm_image.version }}"
+  }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.{{ azure_storage_account_name }}.primary_blob_endpoint
+  }
+
+  computer_name  = "{{ vm_basename }}"
+  admin_username = "{{ azure_vm_admin_username }}"
+  disable_password_authentication = {{ azure_vm_disable_password_authentication | lower }}
+{% if not azure_vm_disable_password_authentication | bool %}
+  admin_password = "{{ azure_vm_admin_password }}"
+{% endif %}
+
+{% if azure_vm_admin_ssh_public_key_file != '' %}
+  admin_ssh_key {
+      username       = "{{ azure_vm_admin_username }}"
+      public_key     = file("{{ azure_vm_admin_ssh_public_key_file }}")
+  }
+{% endif %}
+
+{% if hostvars[vm].azure_tags is defined %}
+  tags = {
+{% for key,value in hostvars[vm].azure_tags.items() %}
+    {{ key }} = "{{ value }}"
+{% endfor %}
+  }
+{% endif %}
+}
+
+{% if hostvars[vm].disks is defined %}
+{% for disk in hostvars[vm].disks %}
+# {{ vm }} {{ disk.name }} managed disk
+{% if disk.encrypt is defined and disk.encrypt | bool and azure_key_vault_enable | bool %}
+resource "azurerm_disk_encryption_set" "{{ disk.name }}_{{ vm_basename }}_encrypted" {
+  name                  = "{{ disk.name }}_{{ vm_basename }}_encrypted"
+  resource_group_name   = azurerm_resource_group.{{ azure_resource_group_name }}.name
+  location              = azurerm_resource_group.{{ azure_resource_group_name }}.location
+  key_vault_key_id      = azurerm_key_vault_key.{{ azure_key_vault_keyname }}.id
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_key_vault_access_policy" "{{ disk.name }}_{{ vm_basename }}" {
+  key_vault_id = azurerm_key_vault.{{ azure_key_vault_name }}.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_disk_encryption_set.{{ disk.name }}_{{ vm_basename }}_encrypted.identity[0].principal_id
+
+  key_permissions = [
+    "get",
+    "wrapkey",
+    "unwrapkey",
+  ]
+}
+{% endif %}
+resource "azurerm_managed_disk" "{{ disk.name }}_{{ vm_basename }}" {
+  name                   = "{{ disk.name }}_{{ vm_basename }}"
+  resource_group_name    = azurerm_resource_group.{{ azure_resource_group_name }}.name
+  location               = azurerm_resource_group.{{ azure_resource_group_name }}.location
+  storage_account_type   = "Standard_LRS"
+  create_option          = "Empty"
+  disk_size_gb           = "{{ disk.size }}"
+{% if disk.encrypt is defined and disk.encrypt | bool and azure_key_vault_enable | bool %}
+  disk_encryption_set_id = azurerm_disk_encryption_set.{{ disk.name }}_{{ vm_basename }}_encrypted.id
+  depends_on             = [azurerm_linux_virtual_machine.{{ vm_basename }},azurerm_key_vault_access_policy.{{ disk.name }}_{{ vm_basename }}]
+{% else %}
+  depends_on             = [azurerm_linux_virtual_machine.{{ vm_basename }}]
+{% endif %}
+{% if hostvars[vm].azure_tags is defined %}
+
+  tags = {
+{% for key,value in hostvars[vm].azure_tags.items() %}
+    {{ key }} = "{{ value }}"
+{% endfor %}
+  }
+{% endif %}
+}
+
+# {{ vm }} {{ disk.name }} attach disk
+resource "azurerm_virtual_machine_data_disk_attachment" "{{ disk.name }}_{{ vm_basename }}" {
+  managed_disk_id    = azurerm_managed_disk.{{ disk.name }}_{{ vm_basename }}.id
+  virtual_machine_id = azurerm_linux_virtual_machine.{{ vm_basename }}.id
+  lun                = "{{ disk.lun }}"
+  caching            = "ReadWrite"
+}
+
+{% endfor %}
+{% endif %}
+{% endfor %}

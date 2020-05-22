@@ -21,6 +21,12 @@
     - not azure_vm_admin_ssh_public_key_file is defined
     - azure_vm_disable_password_authentication | bool
 
+- name: Set the ssh RSA public key fact
+  set_fact:
+    azure_vm_admin_ssh_public_key_file: "{{ terraform_config_dir }}/azure-private/azure_id_rsa.pub"
+  when:
+    - not azure_vm_admin_ssh_public_key_file is defined
+
 - block:
     - name: Purge azure-init output directory
       file:
@@ -76,13 +82,20 @@
   when:
     - azure_localnetworkgws is defined
 
-- name: Deploy Azure machine specific templates
+- name: Deploy Azure key vault template
   template:
-    src: azure/template.tf.j2
-    dest: "{{ terraform_config_dir }}/azure/{{ group.key }}.tf"
+    src: "azure/key_vault.tf.j2"
+    dest: "{{ terraform_config_dir }}/azure/key_vault.tf"
+  when:
+    - azure_key_vault_enable | bool 
+
+- name: Deploy Azure virtual machines specific templates
+  template:
+    src: azure/vms.tf.j2
+    dest: "{{ terraform_config_dir }}/azure/vms_{{ group.key }}.tf"
   with_dict:
     - "{{ groups }}"
   loop_control:
     loop_var: group
   when:
-    - group.key not in ('all', 'ungrouped')
+    - group.key not in (azure_vms_excluded_groups)
