@@ -1,7 +1,0 @@
----
-- name: wrapper playbook for kitchen testing "elasticsearch"
-  hosts: localhost
-  roles:
-    - { role: elasticsearch, es_instance_name: "node1" }
-  vars:
-    es_use_repository: "true"
