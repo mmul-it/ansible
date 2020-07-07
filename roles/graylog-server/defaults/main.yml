@@ -1,6 +1,8 @@
 ---
 # defaults file for graylog-server
 
+graylog_version: '3.3'
+graylog_repository_package: "https://packages.graylog2.org/repo/packages/graylog-{{ graylog_version }}-repository_latest.rpm"
 graylog_server_user: 'graylog'
 graylog_server_group: 'graylog'
 graylog_server_rest_listen_ip: '0.0.0.0'
