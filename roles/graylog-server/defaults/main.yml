@@ -20,3 +20,5 @@ graylog_server_outputbuffer_processor_threads_core_pool_size: 3
 graylog_server_outputbuffer_processor_threads_max_pool_size: 30
 graylog_server_min_heap: '1g'
 graylog_server_max_heap: '1g'
+
+keepalived_interface: eth0

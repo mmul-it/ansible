@@ -7,7 +7,7 @@ vrrp_script chk_nginx {
 }
 
 vrrp_instance VI_1 {
-    interface eth1
+    interface {{ keepalived_interface }}
     state BACKUP
     virtual_router_id 51
     priority {{ keepalived_vrrp_priority }}
@@ -21,7 +21,7 @@ vrrp_instance VI_1 {
     virtual_ipaddress {
         # virtual IP address
 {% for vip in keepalived_vrrp_vips %}
-	{{ vip }} dev eth1
+	{{ vip }} dev {{ keepalived_interface }}
 {% endfor %}
     }
 }
