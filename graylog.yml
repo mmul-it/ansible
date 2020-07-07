@@ -89,39 +89,9 @@
 # Configurations for frontend servers
 - hosts: graylog_frontend
   become: true
-
-  handlers:
-    - name: restart nginx
-      service:
-        name: nginx
-        state: restarted
   tasks:
-    - name: Install required packages
-      package:
-         name: 'nginx'
-         state: present
-
-    - name: Create nginx log dir
-      file:
-        path: /store/logs/nginx
-        state: directory
-        owner: nginx
-        group: nginx
-
-    - name: Configure nginx
-      template:
-        src: graylog/nginx.conf.j2
-        dest: /etc/nginx/nginx.conf
-        owner: root
-        group: root
-        mode: 0644
-      notify: restart nginx
-
-    - name: Start nginx
-      service:
-        name: nginx
-        state: started
-        enabled: yes
+    - import_role:
+        name: 'nginx'
 
     - import_role:
         name: 'keepalived'

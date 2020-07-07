@@ -1,4 +1,3 @@
-## File managed by Ansible
 user nginx;
 worker_processes auto;
 error_log {{ nginx_log_dir }}/error.log;
@@ -24,6 +23,7 @@ http {
       proxy_pass http://{{ nginx_http_name }};
     }
   }
+
   server {
         listen 10061;
         location /nginx_status {
@@ -37,12 +37,13 @@ http {
 
 stream {
 {% for stream in nginx_streams %}
-  ## {{ stream.name }}
+  # {{ stream.name }}
   upstream {{ stream.name }} {
 {% for server in nginx_be_servers %}
     server {{ server }}:{{ stream.port }} weight={{hostvars[server]['server_weight']}};
 {% endfor %}
   }
+
   server {
     listen {{ stream.port }}{% if stream.protocol != 'tcp' %} {{ stream.protocol }}{% endif %};
     proxy_pass {{ stream.name }};
