@@ -95,16 +95,11 @@
       service:
         name: nginx
         state: restarted
-    - name: restart keepalived
-      service:
-        name: keepalived
-        state: restarted
   tasks:
-    # Nginx
-    - name: Install nginx
+    - name: Install required packages
       package:
-        name: nginx
-        state: present
+         name: 'nginx'
+         state: present
 
     - name: Create nginx log dir
       file:
@@ -128,23 +123,5 @@
         state: started
         enabled: yes
 
-    # Keepalived
-    - name: Install keepalived
-      package:
-        name: keepalived
-        state: present
-
-    - name: Configure keepalived
-      template:
-        src: graylog/keepalived.conf.j2
-        dest: /etc/keepalived/keepalived.conf
-        owner: root
-        group: root
-        mode: 0644
-      notify: restart keepalived
-
-    - name: Start keepalived
-      service:
-        name: keepalived
-        state: started
-        enabled: yes
+    - import_role:
+        name: 'keepalived'
