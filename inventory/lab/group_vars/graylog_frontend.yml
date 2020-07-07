@@ -2,7 +2,9 @@
 
 # Keepalived configuration
 keepalived_vrrp_password: '91514409'
-keepalived_vrrp_vips: "{{ graylog_vips }}"
+keepalived_vrrp_vips:
+  - '192.168.122.24/24'
+  - '192.168.122.25/24'
 
 # Nginx configuration
 nginx_be_servers: "{{ groups['graylog_backend'] }}"
