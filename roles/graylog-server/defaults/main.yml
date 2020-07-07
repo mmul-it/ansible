@@ -20,5 +20,8 @@ graylog_server_outputbuffer_processor_threads_core_pool_size: 3
 graylog_server_outputbuffer_processor_threads_max_pool_size: 30
 graylog_server_min_heap: '1g'
 graylog_server_max_heap: '1g'
+graylog_server_elasticsearch_cluster_name: 'graylog-es-cluster'
+graylog_server_elasticsearch_shards: 5
+graylog_server_elasticsearch_replicas: 2
 
 keepalived_interface: eth0
