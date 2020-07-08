@@ -7,10 +7,10 @@ keepalived_vrrp_vips:
   - '192.168.122.25/24'
 
 # Nginx configuration
-nginx_be_servers: "{{ groups['graylog_backend'] }}"
+nginx_backend_servers: "{{ groups['graylog_backend'] }}"
+nginx_backend_port: 9000
 nginx_http_name: logmaster
 nginx_http_port: 80
-nginx_graylog_port: 9000
 nginx_log_dir: /store/logs/nginx
 nginx_streams:
   - name: syslog_udp_5140

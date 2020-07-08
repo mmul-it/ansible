@@ -11,8 +11,8 @@ events {
 http {
   upstream {{ nginx_http_name }} {
     ip_hash;
-{% for server in nginx_be_servers %}
-    server {{ server }}:{{ nginx_graylog_port }};
+{% for server in nginx_backend_servers %}
+    server {{ server }}:{{ nginx_backend_port }};
 {% endfor %}
   }
 
@@ -39,7 +39,7 @@ stream {
 {% for stream in nginx_streams %}
   # {{ stream.name }}
   upstream {{ stream.name }} {
-{% for server in nginx_be_servers %}
+{% for server in nginx_backend_servers %}
     server {{ server }}:{{ stream.port }} weight={{hostvars[server]['server_weight']}};
 {% endfor %}
   }

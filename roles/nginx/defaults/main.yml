@@ -1,15 +1,9 @@
 ---
 
 # Nginx configuration
-nginx_be_servers:
-  - graylog-1:5140
-  - graylog-2:5140
-  - graylog-3:5140
-nginx_http_name: graylog_logger
+nginx_backend_servers: {}
+nginx_backend_port: 9000
+nginx_http_name: my_nginx
 nginx_http_port: 80
-nginx_graylog_port: 9000
 nginx_log_dir: '/var/log/nginx'
-nginx_streams:
-  - name: syslog_udp_5140
-    port: 5140
-    protocol: udp
+nginx_streams: {}
