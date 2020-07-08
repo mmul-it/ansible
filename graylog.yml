@@ -7,76 +7,12 @@
     - import_role:
         name: 'selinux'
 
-    - name: Install Tuned-adm in RedHat
-      yum:
-         name: tuned
-         state: present
-
-    - name: Make folder for profile no-thp
-      file:
-         name: /etc/tuned/no-thp
-         state: directory
-         owner: root
-         group: root
-
-    - name: Copy no-thp profile's File
-      copy:
-        src: '{{ item.src }}'
-        dest: '/etc/tuned/no-thp'
-        owner: root
-        group: root
-        mode: 0755
-      with_filetree:
-          - 'roles/graylog-server/files/no-thp'
-
-    - name: Check tuned active profile
-      shell: |
-        set -o pipefail
-        tuned-adm active | awk -F': ' '{print $2}'
-      register: tuned_active_profile
-      changed_when: false
-
-    - name: Start no-thp profile
-      command: 'tuned-adm profile no-thp'
-      when:
-        - tuned_active_profile.stdout != 'no-thp'
-
-    - name: Import Configuration swappiness
-      sysctl:
-        name: vm.swappiness
-        value: 20
-        state: present
-        reload: yes
-        sysctl_set: yes
-
-    - name: Import Configuration for tcp keepalive
-      sysctl:
-        name: net.ipv4.tcp_keepalive_time
-        value: 300
-        state: present
-        reload: yes
-        sysctl_set: yes
-
-    - name: "Build hosts file for main graylog group"
-      lineinfile:
-        dest: /etc/hosts
-        regexp: "^{{ hostvars[item].ansible_default_ipv4.address }} {{ item }}$"
-        line: "{{ hostvars[item].ansible_default_ipv4.address }} {{ item }}"
-        state: present
-      with_items: "{{ groups['graylog'] }}"
+    - import_tasks: 'roles/graylog-server/tasks/common.yml'
 
 # Configurations for backend servers
 - hosts: graylog_backend
   become: true
   tasks:
-    - name: "Build hosts file for backend interconnect graylog group"
-      lineinfile:
-        dest: /etc/hosts
-        regexp: "^{{ hostvars[item].interconnect_addr }} {{ hostvars[item].interconnect_name }}$"
-        line: "{{ hostvars[item].interconnect_addr }} {{ hostvars[item].interconnect_name }}"
-        state: present
-      with_items: "{{ groups['graylog_backend'] }}"
-
     - import_role:
         name: 'mongodb-cluster'
 
