@@ -39,7 +39,7 @@
     value: 300
     state: present
 
-- name: "Build hosts file for main graylog groups"
+- name: "Build hosts file for main graylog group"
   lineinfile:
     dest: /etc/hosts
     regexp: "^{{ hostvars[item].ansible_default_ipv4.address }} {{ item }}$"
@@ -47,4 +47,11 @@
     state: present
   with_items:
     - "{{ groups['graylog'] }}"
-    - "{{ groups['graylog_backend'] }}"
+
+- name: "Build hosts file for backend interconnect graylog group"
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ hostvars[item].interconnect_addr }} {{ hostvars[item].interconnect_name }}$"
+    line: "{{ hostvars[item].interconnect_addr }} {{ hostvars[item].interconnect_name }}"
+    state: present
+  with_items: "{{ groups['graylog_backend'] }}"
