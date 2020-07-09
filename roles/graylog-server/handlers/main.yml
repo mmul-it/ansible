@@ -1,5 +1,8 @@
 ---
-# handlers file for graylog-server
+
+- name: reload systemd configuration
+  systemd:
+    daemon-reload: yes
 
 - name: restart graylog server
   service:

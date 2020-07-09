@@ -2,40 +2,28 @@
 
 - name: Install required packages
   package:
-     name: "{{ item }}"
+     name: "epel-release"
      state: present
-  with_items:
-    - tuned
-    - epel-release
 
-- name: Make folder for profile no-thp
-  file:
-     name: /etc/tuned/no-thp
-     state: directory
-     owner: root
-     group: root
+- set_fact:
+    disable_thp_before_services:
+      - graylog-server
 
-- name: Copy no-thp profile's File
-  copy:
-    src: '{{ item.src }}'
-    dest: '/etc/tuned/no-thp'
-    owner: root
-    group: root
-    mode: 0755
-  with_filetree:
-      - 'files/no-thp'
+- name: Create disable Transparent Huge Pages (THP) systemd service
+  template:
+    src: disable-thp/disable-thp.service.j2
+    dest: "/etc/systemd/system/disable-thp.service"
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+  notify:
+    -  reload systemd configuration
 
-- name: Check tuned active profile
-  shell: |
-    set -o pipefail
-    tuned-adm active | awk -F': ' '{print $2}'
-  register: tuned_active_profile
-  changed_when: false
-
-- name: Start no-thp profile
-  command: 'tuned-adm profile no-thp'
-  when:
-    - tuned_active_profile.stdout != 'no-thp'
+- name: Check disable Transparent Huge Pages (THP) systemd service
+  service:
+    name: 'disable-thp'
+    state: 'started'
+    enabled: true
 
 - name: Set sysctl swappiness
   sysctl:
