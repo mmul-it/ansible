@@ -4,19 +4,6 @@
   systemd:
     daemon_reload: yes
 
-# Config Server
-- name: restart mongod-cs
-  service:
-    name: mongod-cs
-    state: restarted
-    enabled: yes
-
-- name: start mongod-cs
-  service:
-    name: mongod-cs
-    state: started
-    enabled: yes
-
 # Query Router
 - name: restart mongos-qr
   service:
@@ -40,5 +27,18 @@
 - name: start mongod-sn
   service:
     name: mongod-sn
+    state: started
+    enabled: yes
+
+# Config Server
+- name: restart mongod-cs
+  service:
+    name: mongod-cs
+    state: restarted
+    enabled: yes
+
+- name: start mongod-cs
+  service:
+    name: mongod-cs
     state: started
     enabled: yes
