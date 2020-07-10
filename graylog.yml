@@ -5,7 +5,7 @@
   become: true
   tasks:
     - import_role:
-        name: 'selinux'
+        name: 'system'
 
     - import_tasks: 'roles/graylog-server/tasks/common.yml'
 
