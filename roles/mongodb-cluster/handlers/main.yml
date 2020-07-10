@@ -1,8 +1,4 @@
 ---
-# General Handlers
-- name: reload systemd config
-  systemd:
-    daemon_reload: yes
 
 # Query Router
 - name: restart mongos-qr

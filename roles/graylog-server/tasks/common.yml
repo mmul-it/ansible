@@ -17,7 +17,7 @@
     group: 'root'
     mode: 0644
   notify:
-    -  reload systemd configuration
+    - reload systemd configuration
 
 - name: Check disable Transparent Huge Pages (THP) systemd service
   service:

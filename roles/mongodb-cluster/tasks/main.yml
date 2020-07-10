@@ -39,7 +39,7 @@
     group: root
     mode: 0644
     force: yes
-  notify: reload systemd config
+  notify: reload systemd configuration
 
 # Query Router
 - name: Copy Query Router Configuration File
@@ -60,7 +60,7 @@
     group: root
     mode: 0644
     force: yes
-  notify: reload systemd config
+  notify: reload systemd configuration
 
 # Shard Node
 - name: Copy Shard Node Configuration File
@@ -81,7 +81,7 @@
     group: root
     mode: 0644
     force: yes
-  notify: reload systemd config
+  notify: reload systemd configuration
 
 # Mongo configurations
 - name: Flushing all pending handlers before creating Mongo specific configuratons

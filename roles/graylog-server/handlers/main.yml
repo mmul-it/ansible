@@ -1,9 +1,5 @@
 ---
 
-- name: reload systemd configuration
-  systemd:
-    daemon-reload: yes
-
 - name: restart graylog server
   service:
     name: graylog-server
