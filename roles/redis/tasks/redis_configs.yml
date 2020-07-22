@@ -7,12 +7,15 @@
   changed_when: false
   failed_when: false
 
-- name: "Enable Redis instance {{ redis_instance.name }} port "
+- name: "Enable Redis instance {{ redis_instance.name }} ports"
   firewalld:
-   port: "{{ redis_instance.port }}/tcp"
+   port: "{{ item }}/tcp"
    state: enabled
    permanent: yes
    immediate: yes
+  with_items:
+    - "{{ redis_instance.port }}"
+    - "{{ redis_instance.port | int + 10000 }}"
   when:
     - firewalld_status.status.ActiveState == 'active'
 
@@ -70,3 +73,6 @@
     - reload systemd configuration
   when:
     - redis_instance.exporter_enabled | bool
+
+- name: Flushing all pending handlers before managing Redis instances
+  meta: flush_handlers
