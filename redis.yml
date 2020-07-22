@@ -1,0 +1,6 @@
+---
+- hosts: redis
+  become: true
+  tasks:
+    - import_role:
+        name: redis

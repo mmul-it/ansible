@@ -21,3 +21,8 @@ graylog-3
 kubernetes-1 k8s_role=master run_non_infra_pods=true
 kubernetes-2 k8s_role=worker
 kubernetes-3 k8s_role=worker
+
+[redis]
+redis-1
+redis-2
+redis-3
