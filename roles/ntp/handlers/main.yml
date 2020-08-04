@@ -1,0 +1,7 @@
+---
+
+- name: restart ntp
+  systemd:
+    name: "{{ ntp_service_name }}"
+    state: restarted
+  become: yes
