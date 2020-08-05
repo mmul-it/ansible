@@ -7,6 +7,9 @@
     - import_role:
         name: 'system'
 
+    - import_role:
+        name: 'ntp'
+
     - import_tasks: 'roles/graylog-server/tasks/common.yml'
 
 # Configurations for backend servers
