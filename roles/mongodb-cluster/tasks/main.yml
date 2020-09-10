@@ -94,9 +94,9 @@
         src: 'mongo-check-rs.js'
 
     # Mongo CS - Config Server
-    - name: "Check for port {{ mongodb_cs_port }} on {{ graylog_mongo_master_node }} to be accessible"
+    - name: "Check for port {{ mongodb_cs_port }} on {{ mongodb_master_node }} to be accessible"
       wait_for:
-        host: "{{ graylog_mongo_master_node }}"
+        host: "{{ mongodb_master_node }}"
         port: "{{ mongodb_cs_port }}"
         state: started
         delay: 5
@@ -108,7 +108,7 @@
 
     - name: Check if Mongo Config Server is already active
       shell: |
-        mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_cs_port }} --quiet mongo-check-rs.js
+        mongo --host {{ mongodb_master_node }} --port {{ mongodb_cs_port }} --quiet mongo-check-rs.js
       register: mongo_initial_cs_status
       changed_when: false
       failed_when: false
@@ -116,11 +116,11 @@
     - block:
         - name: Create Config Server in Mongo
           shell: |
-            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_cs_port }} < cs.js
+            mongo --host {{ mongodb_master_node }} --port {{ mongodb_cs_port }} < cs.js
 
         - name: Check Mongo Config Server status
           shell: |
-            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_cs_port }} --quiet mongo-check-rs.js
+            mongo --host {{ mongodb_master_node }} --port {{ mongodb_cs_port }} --quiet mongo-check-rs.js
           register: mongo_cs_status
           changed_when: false
           until: mongo_cs_status.stdout == 'OK'
@@ -130,9 +130,9 @@
         - mongo_initial_cs_status.stdout != 'OK'
 
     # Mongo SN - Shard Node
-    - name: "Check for port {{ mongodb_sn_port }} on {{ graylog_mongo_master_node }} to be accessible"
+    - name: "Check for port {{ mongodb_sn_port }} on {{ mongodb_master_node }} to be accessible"
       wait_for:
-        host: "{{ graylog_mongo_master_node }}"
+        host: "{{ mongodb_master_node }}"
         port: "{{ mongodb_sn_port }}"
         state: started
         delay: 5
@@ -144,7 +144,7 @@
 
     - name: Check if Mongo Shard Node is already active
       shell: |
-        mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_sn_port }} --quiet mongo-check-rs.js
+        mongo --host {{ mongodb_master_node }} --port {{ mongodb_sn_port }} --quiet mongo-check-rs.js
       register: mongo_initial_sn_status
       changed_when: false
       failed_when: false
@@ -152,11 +152,11 @@
     - block:
         - name: Create Shard Node in Mongo
           shell: |
-            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_sn_port }} < sn.js
+            mongo --host {{ mongodb_master_node }} --port {{ mongodb_sn_port }} < sn.js
 
         - name: Check Mongo Shard Node status
           shell: |
-            mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_sn_port }} --quiet mongo-check-rs.js
+            mongo --host {{ mongodb_master_node }} --port {{ mongodb_sn_port }} --quiet mongo-check-rs.js
           register: mongo_sn_status
           changed_when: false
           until: mongo_sn_status.stdout == 'OK'
@@ -166,9 +166,9 @@
         - mongo_initial_sn_status.stdout != 'OK'
 
     # Mongo QR - Query Router
-    - name: "Check for port {{ mongodb_qr_port }} on {{ graylog_mongo_master_node }} to be accessible"
+    - name: "Check for port {{ mongodb_qr_port }} on {{ mongodb_master_node }} to be accessible"
       wait_for:
-        host: "{{ graylog_mongo_master_node }}"
+        host: "{{ mongodb_master_node }}"
         port: "{{ mongodb_qr_port }}"
         state: started
         delay: 5
@@ -180,7 +180,7 @@
 
     - name: Create Mongo QR - Query Router
       shell: |
-        mongo --host {{ graylog_mongo_master_node }} --port {{ mongodb_qr_port }} --quiet qr.js
+        mongo --host {{ mongodb_master_node }} --port {{ mongodb_qr_port }} --quiet qr.js
   when:
     - graylog_server_is_master is defined
     - graylog_server_is_master|bool

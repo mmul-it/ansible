@@ -1,16 +1,29 @@
-# New Graylog Environment
-[graylog]
+# Graylog hosts
+[graylog:children]
+graylog_mongodb
+graylog_elastic
+graylog_server
+graylog_frontend
+
+# Graylog Mongodb servers
+[graylog_mongodb]
 graylog-1
 graylog-2
 graylog-3
 
-# Backend servers (ElasticSearch + Graylog Server + MongoDB)
-[graylog_backend]
+# Graylog Elastic servers
+[graylog_elastic]
 graylog-1
 graylog-2
 graylog-3
 
-# Frontend servers (VIP + Graylog Web + ClusterControl)
+# Graylog servers
+[graylog_server]
+graylog-1
+graylog-2
+graylog-3
+
+# Frontend servers (NGinx/Keepalived)
 [graylog_frontend]
 graylog-1
 graylog-2

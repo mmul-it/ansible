@@ -7,7 +7,7 @@ keepalived_vrrp_vips:
   - '192.168.122.25/24'
 
 # Nginx configuration
-nginx_backend_servers: "{{ groups['graylog_backend'] }}"
+nginx_backend_servers: "{{ groups['graylog_server'] }}"
 nginx_backend_port: 9000
 nginx_http_name: logmaster
 nginx_http_port: 80

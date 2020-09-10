@@ -16,10 +16,10 @@
     msg: 'Variable graylog_server_elasticsearch_cluster_name required'
   when: graylog_server_elasticsearch_cluster_name is not defined
 
-- name: Check graylog_server_elasticsearch_discovery_zen_ping_unicast_hosts variable
+- name: Check graylog_server_elasticsearch_hosts variable
   fail:
-    msg: 'Variable graylog_server_elasticsearch_discovery_zen_ping_unicast_hosts required'
-  when: graylog_server_elasticsearch_discovery_zen_ping_unicast_hosts is not defined
+    msg: 'Variable graylog_server_elasticsearch_hosts required'
+  when: graylog_server_elasticsearch_hosts is not defined
 
 - name: Check graylog_server_mongodb_uri variable
   fail:

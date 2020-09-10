@@ -13,15 +13,23 @@
     - import_tasks: 'roles/graylog-server/tasks/common.yml'
 
 # Configurations for backend servers
-- hosts: graylog_backend
+- hosts: graylog_mongodb
   become: true
   tasks:
     - import_role:
         name: 'mongodb-cluster'
 
+# Configurations for elastic servers
+- hosts: graylog_elastic
+  become: true
+  tasks:
     - import_role:
         name: 'ansible-elasticsearch'
 
+# Configurations for graylog servers
+- hosts: graylog_server
+  become: true
+  tasks:
     - import_role:
         name: 'graylog-server'
 

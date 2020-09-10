@@ -47,11 +47,3 @@
     state: present
   with_items:
     - "{{ groups['graylog'] }}"
-
-- name: "Build hosts file for backend interconnect graylog group"
-  lineinfile:
-    dest: /etc/hosts
-    regexp: "^{{ hostvars[item].interconnect_addr }} {{ hostvars[item].interconnect_name }}$"
-    line: "{{ hostvars[item].interconnect_addr }} {{ hostvars[item].interconnect_name }}"
-    state: present
-  with_items: "{{ groups['graylog_backend'] }}"

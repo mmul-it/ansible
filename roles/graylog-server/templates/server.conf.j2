@@ -15,8 +15,7 @@ http_bind_address = {{ graylog_server_http_bind_address_ip }}:{{ graylog_server_
 elasticsearch_shards = {{ graylog_server_elasticsearch_shards }}
 elasticsearch_replicas = {{ graylog_server_elasticsearch_replicas }}
 elasticsearch_cluster_name = {{ graylog_server_elasticsearch_cluster_name }}
-elasticsearch_discovery_zen_ping_unicast_hosts = {{ graylog_es_cluster_interconnect_nodes }}
-elasticsearch_network_host = {{ interconnect_addr }}
+elasticsearch_hosts = {{ graylog_server_elasticsearch_hosts }}
 
 # Buffer
 processbuffer_processors = {{graylog_server_processbuffer_processors}}
