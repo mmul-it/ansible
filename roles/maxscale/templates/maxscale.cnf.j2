@@ -1,0 +1,39 @@
+# File managed by Ansible
+[maxscale]
+threads=4
+admin_enabled=true
+
+# Server definitions
+{% for node in maxscale_db_hosts %}
+[{{ node.name }}]
+type=server
+address={{ node.address }}
+port={{ node.port }}
+protocol=mariadbbackend
+{% endfor %}
+
+# Monitor for the servers
+[galera-monitor]
+type=monitor
+module=galeramon
+servers={% for node in maxscale_db_hosts %}{{ node.address }}{% if not loop.last %}, {% endif %}{% endfor %}
+user={{ maxscale_monitor_user }}
+password={{ maxscale_monitor_password }}
+use_priority=true
+
+# Service definitions
+[splitter-service]
+type=service
+router=readwritesplit
+servers={% for node in maxscale_db_hosts %}{{ node.address }}{% if not loop.last %}, {% endif %}{% endfor %}
+user={{ maxscale_monitor_user }}
+password={{ maxscale_monitor_password }}
+use_sql_variables_in=master
+
+# Listener definitions for the services
+[splitter-listener]
+type=listener
+service=splitter-service
+protocol=mariadbclient
+address={{ maxscale_vip['ip'] }}
+port={{ maxscale_vip['port'] }}

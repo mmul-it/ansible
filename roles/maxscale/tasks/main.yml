@@ -1,0 +1,25 @@
+---
+
+- name: Adding MaxScale yum repository
+  yum_repository:
+    name: maxscale
+    description: MaxScale Yum Repository
+    baseurl: https://downloads.mariadb.com/files/MaxScale/latest/centos/7/x86_64
+    gpgkey: https://downloads.mariadb.com/MaxScale/MariaDB-MaxScale-GPG-KEY
+    gpgcheck: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Installing MaxScale
+  package:
+    name: maxscale
+    state: present
+
+- name: Deploy MaxScale configuration file
+  template:
+    src: maxscale.cnf.j2
+    dest: /etc/maxscale.cnf
+    owner: root
+    group: root
+    mode: 0644
+
+- include: grants.yml

@@ -1,0 +1,12 @@
+# Initial MaxScale configuration
+
+{% for node in maxscale_db_hosts %}
+# Node {{ node.name }}
+create user `{{ maxscale_monitor_user }}`@`{{ node.address }}` identified by '{{ maxscale_monitor_password }}';
+grant select on mysql.roles_mapping to `{{ maxscale_monitor_user }}`@`{{ node.address }}`;
+grant select on mysql.user to `{{ maxscale_monitor_user }}`@`{{ node.address }}`;
+grant select on mysql.db to `{{ maxscale_monitor_user }}`@`{{ node.address }}`;
+grant select on mysql.tables_priv to `{{ maxscale_monitor_user }}`@`{{ node.address }}`;
+grant show databases on *.* to `{{ maxscale_monitor_user }}`@`{{ node.address }}`;
+{% endfor %}
+flush privileges;
