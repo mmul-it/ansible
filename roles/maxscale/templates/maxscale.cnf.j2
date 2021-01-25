@@ -1,39 +1,55 @@
 # File managed by Ansible
 [maxscale]
-threads=4
-admin_enabled=true
+threads={{ maxscale_threads }}
+admin_enabled={{ maxscale_admin_enabled }}
+{% if maxscale_log_enabled|bool %}
+log_warning=1
+log_notice=1
+log_info=1
+log_debug=1
+{% endif %}
 
-# Server definitions
+# Servers
 {% for node in maxscale_db_hosts %}
 [{{ node.name }}]
 type=server
 address={{ node.address }}
 port={{ node.port }}
 protocol=mariadbbackend
+{% if node.ssl|bool %}
+ssl=required
+ssl_key={{ node.ssl_key }}
+ssl_cert={{ node.ssl_cert }}
+ssl_ca_cert={{ node.ssl_ca_cert }}
+{% endif %}
 {% endfor %}
 
-# Monitor for the servers
-[galera-monitor]
+# Monitors
+{% for maxscale_monitor in maxscale_monitors %}
+[{{ maxscale_monitor.name }}]
 type=monitor
-module=galeramon
-servers={% for node in maxscale_db_hosts %}{{ node.address }}{% if not loop.last %}, {% endif %}{% endfor %}
-user={{ maxscale_monitor_user }}
-password={{ maxscale_monitor_password }}
-use_priority=true
+module={{ maxscale_monitor.module }}
+servers={{ maxscale_monitor.servers }}
+user={{ maxscale_monitor.user }}
+password={{ maxscale_monitor.password }}
+{% endfor %}
 
-# Service definitions
-[splitter-service]
+# Services
+{% for maxscale_service in maxscale_services %}
+[{{ maxscale_service.name }}]
 type=service
-router=readwritesplit
-servers={% for node in maxscale_db_hosts %}{{ node.address }}{% if not loop.last %}, {% endif %}{% endfor %}
-user={{ maxscale_monitor_user }}
-password={{ maxscale_monitor_password }}
-use_sql_variables_in=master
+router={{ maxscale_service.router }}
+servers={{ maxscale_service.servers }}
+user={{ maxscale_service.user }}
+password={{ maxscale_service.password }}
+{% endfor %}
 
-# Listener definitions for the services
-[splitter-listener]
+# Listeners
+{% for maxscale_listener in maxscale_listeners %}
+[{{ maxscale_listener.name }}]
 type=listener
-service=splitter-service
-protocol=mariadbclient
-address={{ maxscale_vip['ip'] }}
-port={{ maxscale_vip['port'] }}
+service={{ maxscale_listener.service }}
+protocol={{ maxscale_listener.protocol }}
+address={{ maxscale_listener.address }}
+port={{ maxscale_listener.port }}
+{% endfor %}
