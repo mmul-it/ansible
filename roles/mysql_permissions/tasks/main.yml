@@ -1,0 +1,41 @@
+---
+
+- block:
+    - name: Adding MariaDB yum repository
+      yum_repository:
+        name: mariadb
+        description: MariaDB Yum Repository
+        baseurl: http://yum.mariadb.org/10.5/centos7-amd64
+        gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+        gpgcheck: yes
+      when: ansible_os_family == "RedHat"
+      become: true
+    
+    - name: Installing MaxScale
+      package:
+        name:
+          - MariaDB-client
+        state: present
+  become: true
+
+- name: "Set mysql command fact"
+  set_fact:
+    mysql_command: "mysql {% if mysql_force_ssl|bool %}--ssl {% endif %}--host={{ mysql_host }} --user={{ mysql_admin_login }} --password={{ mysql_admin_password }} --skip-column-names --batch -e"
+
+- name: "Check MySql connectivity"
+  command: "{{ mysql_command }} \"SHOW STATUS\""
+  changed_when: false
+
+- name: "Generate user and password dict"
+  set_fact:
+    mysql_passwords: "{{ mysql_passwords|default({}) | combine( {item.name: {'password': item.password, 'force': item.force_password }} ) }}"
+  no_log: true
+  with_items:
+    - "{{ mysql_users }}"
+
+- name: "Manage DB"
+  include_tasks: manage_database.yml
+  with_items:
+    - "{{ mysql_databases }}"
+  loop_control:
+    loop_var: mysql_database
