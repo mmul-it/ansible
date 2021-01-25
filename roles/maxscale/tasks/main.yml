@@ -1,6 +1,6 @@
 ---
 
-- name: Adding MaxScale yum repository
+- name: Adding MariaDB MaxScale yum repository
   yum_repository:
     name: maxscale
     description: MaxScale Yum Repository
@@ -22,4 +22,8 @@
     group: root
     mode: 0644
 
-- include: grants.yml
+- name: Enable and start MaxScale service
+  service:
+    name: maxscale
+    state: started
+    enabled: yes
