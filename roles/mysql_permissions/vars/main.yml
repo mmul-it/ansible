@@ -5,7 +5,7 @@ mysql_grants:
   delete: 'DELETE'
   insert_update_delete: 'INSERT, UPDATE, DELETE'
   replication_slave: 'REPLICATION SLAVE'
-  sow_db_and_replication_slave: 'SHOW DATABASES, REPLICATION CLIENT'
+  show_db_and_replication_slave: 'SHOW DATABASES, REPLICATION CLIENT'
   select: 'SELECT'
   select_insert_update: 'SELECT, INSERT, UPDATE'
   select_update: 'SELECT, UPDATE'
