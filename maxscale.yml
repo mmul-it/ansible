@@ -1,0 +1,10 @@
+---
+
+- hosts: maxscale
+  tasks:
+    - import_role:
+        name: 'mysql_permissions'
+
+    - import_role:
+        name: 'maxscale'
+      become: true
