@@ -11,7 +11,7 @@
       when: ansible_os_family == "RedHat"
       become: true
     
-    - name: Installing MaxScale
+    - name: Installing MariaDB-client
       package:
         name:
           - MariaDB-client
