@@ -5,11 +5,9 @@
       yum_repository:
         name: mariadb
         description: MariaDB Yum Repository
-        baseurl: http://yum.mariadb.org/10.5/centos7-amd64
+        baseurl: "http://yum.mariadb.org/{{ mariadb_client_version }}/centos{{ ansible_distribution_major_version }}-amd64"
         gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
         gpgcheck: yes
-      when: ansible_os_family == "RedHat"
-      become: true
     
     - name: Installing MariaDB-client
       package:
@@ -17,6 +15,23 @@
           - MariaDB-client
         state: present
   become: true
+  when: ansible_os_family == "RedHat"
+
+- block:
+    - name: Get MariaDB APT repository key
+      apt_key:
+        url: https://mariadb.org/mariadb_release_signing_key.asc
+
+    - name: Adding MariaDB apt repository
+      apt_repository:
+        repo: "deb https://mirror.terrahost.no/mariadb/repo/{{ mariadb_client_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} main"
+
+    - name: Installing mariadb-client
+      package:
+        name:
+          - mariadb-client
+  become: true
+  when: ansible_os_family == "Debian"
 
 - name: "Set mysql command fact"
   set_fact:

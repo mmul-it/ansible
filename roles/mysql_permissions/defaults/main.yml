@@ -1,4 +1,8 @@
 ---
+
+# MariaDB client version
+mariadb_client_version: '10.5'
+
 # User ssl by default
 mysql_force_ssl: true
 
