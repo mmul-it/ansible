@@ -1,5 +1,6 @@
 ---
 
+maxscale_version: '2.5'
 maxscale_threads: 'auto'
 maxscale_admin_enabled: true
 maxscale_log_enabled: false

@@ -4,10 +4,20 @@
   yum_repository:
     name: maxscale
     description: MaxScale Yum Repository
-    baseurl: https://downloads.mariadb.com/files/MaxScale/latest/centos/7/x86_64
+    baseurl: "https://downloads.mariadb.com/MaxScale/{{ maxscale_version }}/centos/{{ ansible_distribution_major_version }}/x86_64"
     gpgkey: https://downloads.mariadb.com/MaxScale/MariaDB-MaxScale-GPG-KEY
     gpgcheck: yes
   when: ansible_os_family == "RedHat"
+
+- block:
+    - name: Get MaxScale APT repository key
+      apt_key:
+        url: "https://downloads.mariadb.com/MaxScale/{{ maxscale_version }}/MariaDB-Enterprise-Signing-Key.public"
+
+    - name: Adding MaxScale apt repository
+      apt_repository:
+        repo: "deb https://downloads.mariadb.com/MaxScale/{{ maxscale_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} main"
+  when: ansible_os_family == "Debian"
 
 - name: Installing MaxScale
   package:
