@@ -32,6 +32,13 @@
     group: root
     mode: 0644
 
+- name: Get SSL certificates
+  include: ssl.yml
+  with_items:
+    - "{{ maxscale_db_hosts }}"
+  loop_control:
+    loop_var: maxscale_db_host
+
 - name: Enable and start MaxScale service
   service:
     name: maxscale

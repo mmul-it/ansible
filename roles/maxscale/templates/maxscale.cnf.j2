@@ -18,9 +18,15 @@ port={{ node.port }}
 protocol=mariadbbackend
 {% if node.ssl|bool %}
 ssl=required
-ssl_key={{ node.ssl_key }}
-ssl_cert={{ node.ssl_cert }}
-ssl_ca_cert={{ node.ssl_ca_cert }}
+{% if node.ssl_key.path is defined %}
+ssl_key={{ node.ssl_key.path }}
+{% endif %}
+{% if node.ssl_cert.path is defined %}
+ssl_cert={{ node.ssl_cert.path }}
+{% endif %}
+{% if node.ssl_ca_cert.path is defined %}
+ssl_ca_cert={{ node.ssl_ca_cert.path }}
+{% endif %}
 {% endif %}
 {% endfor %}
 
