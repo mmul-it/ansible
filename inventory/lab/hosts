@@ -39,3 +39,14 @@ kubernetes-3 k8s_role=worker
 redis-1
 redis-2
 redis-3
+
+# Azure hosts via Terraform
+[terraform:children]
+terraform_mailservers
+terraform_frontends
+
+[terraform_mailservers]
+azure-vm-mailserver
+
+[terraform_frontends]
+azure-vm-haproxy
