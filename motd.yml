@@ -1,0 +1,8 @@
+---
+
+- hosts: all
+  tasks:
+    - name: 'Change motd'
+      copy:
+        content: "{{ custom_motd | default('Custom Motd\n') }}"
+        dest: /etc/motd
