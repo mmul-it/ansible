@@ -10,7 +10,9 @@
     - import_role:
         name: 'ntp'
 
-    - import_tasks: 'roles/graylog-server/tasks/common.yml'
+    - import_role:
+        name: graylog-server
+        tasks_from: common
 
 # Configurations for backend servers
 - hosts: graylog_mongodb
