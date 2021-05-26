@@ -1,5 +1,9 @@
 ---
 
+# Chose whether or not to enable frontend components
+graylog_frontend_keepalived_enable: true
+graylog_frontend_nginx_enable: true
+
 # Keepalived configuration
 keepalived_vrrp_password: '91514409'
 keepalived_vrrp_vips:

@@ -39,6 +39,10 @@
   tasks:
     - import_role:
         name: 'nginx'
+      when:
+        - graylog_frontend_nginx_enable|bool
 
     - import_role:
         name: 'keepalived'
+      when:
+        - graylog_frontend_keepalived_enable|bool
