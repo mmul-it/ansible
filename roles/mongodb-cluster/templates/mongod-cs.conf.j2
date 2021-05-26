@@ -1,5 +1,5 @@
 ---
-# mongod.conf
+# mongod-cs.conf
 # File managed by Ansible
 
 systemLog:
@@ -17,6 +17,12 @@ net:
 
 storage:
   dbPath: {{ mongodb_cs_dbpath }}
+{% if mongodb_cs_wired_tiger_enable|bool %}
+  wiredTiger:
+    engineConfig:
+      configString: cache_size={{ mongodb_cs_wired_tiger_cache_size }}
+
+{% endif -%}
 
 sharding:
   clusterRole: configsvr

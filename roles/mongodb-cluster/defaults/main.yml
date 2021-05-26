@@ -14,6 +14,8 @@ mongodb_cs_config_file: "/etc/mongod-cs.conf"
 mongodb_cs_bind_ip: "127.0.0.1"
 mongodb_cs_port: 27019
 mongodb_cs_dbpath: "/var/lib/mongo/cs"
+mongodb_cs_wired_tiger_enable: false
+mongodb_cs_wired_tiger_cache_size: ''
 mongodb_cs_logpath: "/var/log/mongodb"
 mongodb_cs_pidfilepath: "/var/run/mongodb"
 mongodb_cs_replica_set_name: "csReplSet"
@@ -30,6 +32,8 @@ mongodb_sn_config_file: "/etc/mongod-sn.conf"
 mongodb_sn_bind_ip: "127.0.0.1"
 mongodb_sn_port: 27018
 mongodb_sn_dbpath: "/var/lib/mongo/sn"
+mongodb_sn_wired_tiger_enable: false
+mongodb_sn_wired_tiger_cache_size: ''
 mongodb_sn_logpath: "/var/log/mongodb"
 mongodb_sn_pidfilepath: "/var/run/mongodb"
 mongodb_sn_replica_set_name: "shard-rs0"
