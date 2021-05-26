@@ -40,6 +40,15 @@
     mode: 0644
   notify: restart graylog server
 
+- name: Configure Graylog Server Log4j2 Config
+  template:
+    src: log4j2.xml.j2
+    dest: /etc/graylog/server/log4j2.xml
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart graylog server
+
 - name: Copy plugin file to the Graylog Server Plugin dir
   copy:
     src: "{{ item }}"

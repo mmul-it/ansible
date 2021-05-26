@@ -16,6 +16,13 @@ graylog_server_outputbuffer_processors: 3
 graylog_server_outputbuffer_processor_keep_alive_time: 5000
 graylog_server_outputbuffer_processor_threads_core_pool_size: 3
 graylog_server_outputbuffer_processor_threads_max_pool_size: 30
+graylog_server_log4j2_log_path: '/var/log/graylog-server/server.log'
+graylog_server_log4j2_log_pattern: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5p [%c{1}] %m%n"
+graylog_server_log4j2_log_level: 'info'
+graylog_server_log4j2_restaccess_enable: true
+graylog_server_log4j2_restaccess_path: '/var/log/graylog-server/restaccess.log'
+graylog_server_log4j2_restaccess_pattern: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5p [%c{1}] %m%n"
+graylog_server_log4j2_restaccess_level: 'debug'
 
 # Java process
 graylog_server_min_heap: '1g'
