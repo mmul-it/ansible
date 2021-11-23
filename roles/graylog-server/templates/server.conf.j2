@@ -20,13 +20,15 @@ elasticsearch_cluster_name = {{ graylog_server_elasticsearch_cluster_name }}
 elasticsearch_hosts = {{ graylog_server_elasticsearch_hosts }}
 
 # Buffer
-processbuffer_processors = {{graylog_server_processbuffer_processors}}
-outputbuffer_processors = {{graylog_server_outputbuffer_processors}}
-outputbuffer_processor_keep_alive_time = {{graylog_server_outputbuffer_processor_keep_alive_time}}
-outputbuffer_processor_threads_core_pool_size = {{graylog_server_outputbuffer_processor_threads_core_pool_size}}
-outputbuffer_processor_threads_max_pool_size = {{graylog_server_outputbuffer_processor_threads_max_pool_size}}
-inputbuffer_ring_size = {{graylog_server_inputbuffer_size}}
+processbuffer_processors = {{ graylog_server_processbuffer_processors }}
+outputbuffer_processors = {{ graylog_server_outputbuffer_processors }}
+outputbuffer_processor_keep_alive_time = {{ graylog_server_outputbuffer_processor_keep_alive_time }}
+outputbuffer_processor_threads_core_pool_size = {{ graylog_server_outputbuffer_processor_threads_core_pool_size }}
+outputbuffer_processor_threads_max_pool_size = {{ graylog_server_outputbuffer_processor_threads_max_pool_size }}
+inputbuffer_ring_size = {{ graylog_server_inputbuffer_ring_size }}
 message_journal_dir = {{ graylog_server_message_journal_dir }}
+message_journal_max_age = {{ graylog_server_message_journal_max_age }}
+message_journal_max_size = {{ graylog_server_message_journal_max_size }}
 
 # MongoDB
 mongodb_uri = {{ graylog_server_mongodb_uri }}
