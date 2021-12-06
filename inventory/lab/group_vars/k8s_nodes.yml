@@ -1,6 +1,14 @@
+k8s_multi_master: true
 k8s_master_node: kubernetes-1
+k8s_balancer_VIP: 192.168.122.199
+k8s_balancer_interface: eth0
 k8s_master_port: 6443
 k8s_cidr: 172.16.0.0/16
+
+k8s_docker_native_cgroupdriver: 'systemd'
+k8s_docker_daemon_options:
+  exec-opts:
+    - native.cgroupdriver={{ k8s_docker_native_cgroupdriver }}
 
 k8s_users:
   - name: pod-viewer
