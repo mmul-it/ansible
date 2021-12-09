@@ -12,13 +12,78 @@
   changed_when: false
   failed_when: false
 
-- block:
+- name: Set control plane endpoint for single node
+  set_fact:
+    k8s_control_plane_endpoint: "{{ hostvars[k8s_master_node]['ansible_default_ipv4']['address'] }}"
+  when: not k8s_multi_master | bool
+
+- name: Set control plane endpoint for multi master
+  set_fact:
+    k8s_control_plane_endpoint: "{{ k8s_balancer_VIP }}:{{ k8s_balancer_port }}"
+  when: k8s_multi_master | bool
+
+- name: Multi master directories and files
+  block:
+    - name: Directories
+      file:
+        path: "/usr/local/etc/{{ item }}"
+        state: directory
+      with_items:
+        - haproxy
+        - keepalived
+
+    - name: Creating haproxy.cfg file
+      template:
+        src: haproxy.cfg.j2
+        dest: /usr/local/etc/haproxy/haproxy.cfg
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Creating keepalived.conf file
+      template:
+        src: keepalived.conf.j2
+        dest: /usr/local/etc/keepalived/keepalived.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Creating pod configurations"
+      template:
+        src: "{{ item }}_pod.yaml.j2"
+        dest: "/etc/kubernetes/manifests/{{ item }}.yaml"
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - haproxy
+        - keepalived
+
+    - name: Creating keepalived check script
+      template:
+        src: templates/check_apiserver.sh.j2
+        dest: /usr/local/etc/keepalived/check_apiserver.sh
+        owner: root
+        group: root
+        mode: 0755
+  when:
+    - k8s_multi_master | bool
+    - inventory_hostname == k8s_master_node
+
+- name: Setting up the master node
+  block:
     - name: Pulling images required for setting up a Kubernetes cluster
       command: kubeadm config images pull
       become: true
 
     - name: Initializing Kubernetes cluster
-      command: kubeadm init --apiserver-advertise-address {{ hostvars[k8s_master_node]['ansible_default_ipv4']['address'] }} --pod-network-cidr={{ k8s_network_cidr }}
+      command: |
+        kubeadm init \
+        --control-plane-endpoint {{ k8s_control_plane_endpoint }} \
+        --apiserver-bind-port {{ k8s_master_port }}
+        --pod-network-cidr={{ k8s_network_cidr }} \
+        --certificate-key {{ k8s_master_cert_key }} \
+        --upload-certs
       become: true
 
     - name: Create local directories
@@ -65,8 +130,9 @@
             - "{{ k8s_dashboard_resources }}"
       when:
         - k8s_dashboard_deploy|bool
-
-  when: k8s_cluster_info.rc != 0
+  when:
+    - k8s_cluster_info.rc != 0
+    - inventory_hostname == k8s_master_node
 
 - block:
     - name: Get taints for master node
@@ -86,27 +152,53 @@
     - run_non_infra_pods is defined
     - run_non_infra_pods|bool
 
-- name: Get Token from Kubernetes
-  shell: |
-    set -o pipefail
-    kubeadm token list | awk 'NR == 2 {print $1}'
-  register: k8s_token_output
-  changed_when: false
+- name: Set kubeadm join credentials from master node
+  block:
+    - name: Get Token from Kubernetes
+      shell: |
+        set -o pipefail
+        kubeadm token list | awk 'NR == 2 {print $1}'
+      register: k8s_token_output
+      changed_when: false
 
-- name: Set fact k8s_token_output
-  set_fact:
-    k8s_token: "{{ k8s_token_output.stdout }}"
+    - name: Set fact k8s_token_output
+      set_fact:
+        k8s_token: "{{ k8s_token_output.stdout }}"
 
-- name: Get SHA256 Discovery Token CA Cert Hash from Kubernetes
-  shell: |
-    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | \
-    openssl rsa -pubin -outform der 2>/dev/null | \
-    openssl dgst -sha256 -hex | \
-    sed 's/^.* //'
-  register: k8s_discovery_token_ca_cert_hash_output
-  changed_when: false
-  become: true
+    - name: Get SHA256 Discovery Token CA Cert Hash from Kubernetes
+      shell: |
+        openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | \
+        openssl rsa -pubin -outform der 2>/dev/null | \
+        openssl dgst -sha256 -hex | \
+        sed 's/^.* //'
+      register: k8s_discovery_token_ca_cert_hash_output
+      changed_when: false
+      become: true
 
-- name: Set fact k8s_discovery_token_ca_cert_hash
-  set_fact:
-    k8s_discovery_token_ca_cert_hash: "{{ k8s_discovery_token_ca_cert_hash_output.stdout }}"
+    - name: Set fact k8s_discovery_token_ca_cert_hash
+      set_fact:
+        k8s_discovery_token_ca_cert_hash: "{{ k8s_discovery_token_ca_cert_hash_output.stdout }}"
+  when:
+    - inventory_hostname == k8s_master_node
+
+- name: Join other masters
+  block:
+    - name: "Check node join status"
+      command: kubectl get nodes {{ ansible_fqdn }} -o jsonpath='{.status.conditions[?(@.reason == "KubeletReady")].type}'
+      register: k8s_node_join_status
+      changed_when: false
+      failed_when: false
+      delegate_to: "{{ k8s_master_node }}"
+
+    - name: Joining control-plane nodes with kubernetes master
+      command: |
+        kubeadm join {{ k8s_control_plane_endpoint }} \
+        --token {{ hostvars[k8s_master_node]['k8s_token'] }} \
+        --discovery-token-ca-cert-hash sha256:{{ hostvars[k8s_master_node]['k8s_discovery_token_ca_cert_hash'] }} \
+        --control-plane \
+        --certificate-key {{ k8s_master_cert_key }}
+      when:
+        - k8s_node_join_status.stdout != "Ready"
+      become: true
+  when:
+    - inventory_hostname != k8s_master_node

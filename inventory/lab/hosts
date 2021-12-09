@@ -32,8 +32,9 @@ graylog-3
 # Kubernetes hosts
 [k8s_nodes]
 kubernetes-1 k8s_role=master run_non_infra_pods=true
-kubernetes-2 k8s_role=worker
-kubernetes-3 k8s_role=worker
+kubernetes-2 k8s_role=master run_non_infra_pods=true
+kubernetes-3 k8s_role=master run_non_infra_pods=true
+kubernetes-4 k8s_role=worker
 
 [redis]
 redis-1
