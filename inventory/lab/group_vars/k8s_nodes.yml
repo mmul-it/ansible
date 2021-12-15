@@ -22,26 +22,28 @@ k8s_docker_daemon_options:
   exec-opts:
     - native.cgroupdriver={{ k8s_docker_native_cgroupdriver }}
 
-k8s_users:
-  - name: pod-viewer
-    namespace: default
-    role_name: pod-viewer-role
-    role_rules_apigroups: '""'
-    role_rules_resources: '"pods","pods/exec","pods/log"'
-    role_rules_verbs: '"*"'
-    rolebinding_name: pod-viewer-rolebinding
-    cert_path: 'kubernetes/pod-viewer/ssl'
-    cert_expire_days: 3650
-    update_kube_config: true
+# Users can be created by enabling k8s_users variable
+#k8s_users:
+#  - name: pod-viewer
+#    namespace: default
+#    role_name: pod-viewer-role
+#    role_rules_apigroups: '""'
+#    role_rules_resources: '"pods","pods/exec","pods/log"'
+#    role_rules_verbs: '"*"'
+#    rolebinding_name: pod-viewer-rolebinding
+#    cert_path: 'kubernetes/pod-viewer/ssl'
+#    cert_expire_days: 3650
+#    update_kube_config: true
 
-k8s_ceph_csi_enable: true
-k8s_ceph_csi_release: v2.0.1
-k8s_ceph_csi_id: lab-ceph
-k8s_ceph_csi_secret_userid: kubernetes
-k8s_ceph_csi_secret_userkey: AQC73I5eDKLgLBAACUqUv3qbHBqtmwG1aK8MJw==
-k8s_ceph_csi_clusterid: f5042dcf-f02f-4e47-a4fa-d4acb614c94a
-k8s_ceph_csi_pool: kubepool
-k8s_ceph_csi_monitors:
-  - 192.168.122.11:6789
-  - 192.168.122.12:6789
-  - 192.168.122.13:6789
+# The Ceph CSI can be activated by enabling this section
+#k8s_ceph_csi_enable: true
+#k8s_ceph_csi_release: v2.0.1
+#k8s_ceph_csi_id: lab-ceph
+#k8s_ceph_csi_secret_userid: kubernetes
+#k8s_ceph_csi_secret_userkey: AQC73I5eDKLgLBAACUqUv3qbHBqtmwG1aK8MJw==
+#k8s_ceph_csi_clusterid: f5042dcf-f02f-4e47-a4fa-d4acb614c94a
+#k8s_ceph_csi_pool: kubepool
+#k8s_ceph_csi_monitors:
+#  - 192.168.122.11:6789
+#  - 192.168.122.12:6789
+#  - 192.168.122.13:6789
