@@ -1,13 +1,6 @@
 k8s_master_node: kubernetes-1
 k8s_master_port: 6443
 k8s_master_cert_key: "91bded725a628a081d74888df8745172ed842fe30c7a3898b3c63ca98c7226fd"
-k8s_master_ports:
-  - 6443/tcp
-  - 2379-2380/tcp
-  - 10250/tcp
-  - 10251/tcp
-  - 10252/tcp
-  - 8443/tcp
 
 k8s_multi_master: true
 k8s_balancer_VIP: 192.168.122.199
@@ -15,12 +8,19 @@ k8s_balancer_interface: eth0
 k8s_balancer_port: 8443
 k8s_balancer_password: "d6e284576158b1"
 
-k8s_cidr: 172.16.0.0/16
+k8s_master_ports:
+  - 2379-2380/tcp
+  - 6443/tcp
+  - 8443/tcp
+  - 10250/tcp
+  - 10257/tcp
+  - 10259/tcp
 
-k8s_docker_native_cgroupdriver: 'systemd'
-k8s_docker_daemon_options:
-  exec-opts:
-    - native.cgroupdriver={{ k8s_docker_native_cgroupdriver }}
+# Flannel addon
+k8s_network_addon: flannel
+k8s_network_addon_ports:
+  - 8285/udp
+  - 8472/udp
 
 # Users can be created by enabling k8s_users variable
 #k8s_users:
