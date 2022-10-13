@@ -52,3 +52,8 @@ k8s_metallb_enable: true
 k8s_metallb_pools:
   - name: 'first-pool'
     addresses: '192.168.122.100-192.168.122.130'
+
+k8s_ingress_nginx_enable: true
+k8s_ingress_nginx_lb_services:
+  - name: ingress-nginx-lb
+    ip: 192.168.122.100
