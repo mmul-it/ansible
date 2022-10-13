@@ -57,3 +57,17 @@ k8s_ingress_nginx_enable: true
 k8s_ingress_nginx_lb_services:
   - name: ingress-nginx-lb
     ip: 192.168.122.100
+
+k8s_cert_manager_enable: true
+k8s_cert_manager_issuers:
+  - name: letsencrypt
+    cluster: true
+    acme:
+      server: https://acme-v02.api.letsencrypt.org/directory
+      email: rasca@mmul.it
+      privateKeySecretRef:
+        name: letsencrypt
+      solvers:
+      - http01:
+          ingress:
+            class: nginx
