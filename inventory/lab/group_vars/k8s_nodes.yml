@@ -47,3 +47,8 @@ k8s_network_addon_ports:
 #  - 192.168.122.11:6789
 #  - 192.168.122.12:6789
 #  - 192.168.122.13:6789
+
+k8s_metallb_enable: true
+k8s_metallb_pools:
+  - name: 'first-pool'
+    addresses: '192.168.122.100-192.168.122.130'
