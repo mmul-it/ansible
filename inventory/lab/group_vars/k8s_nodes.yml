@@ -54,9 +54,18 @@ k8s_metallb_pools:
     addresses: '192.168.122.100-192.168.122.130'
 
 k8s_ingress_nginx_enable: true
-k8s_ingress_nginx_lb_services:
+k8s_ingress_nginx_services:
   - name: ingress-nginx-lb
-    ip: 192.168.122.100
+    spec:
+      type: LoadBalancer
+      loadBalancerIP: 192.168.122.100
+      ports:
+      - name: port-1
+        port: 80
+        protocol: TCP
+      - name: port-2
+        port: 443
+        protocol: TCP
 
 k8s_cert_manager_enable: true
 k8s_cert_manager_issuers:
