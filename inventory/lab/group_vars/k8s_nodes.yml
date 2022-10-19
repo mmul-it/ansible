@@ -8,6 +8,8 @@ k8s_balancer_interface: eth0
 k8s_balancer_port: 8443
 k8s_balancer_password: "d6e284576158b1"
 
+k8s_wait_timeout: 1200
+
 k8s_master_ports:
   - 2379-2380/tcp
   - 6443/tcp
