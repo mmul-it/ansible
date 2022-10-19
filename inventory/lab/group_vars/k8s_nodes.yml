@@ -36,17 +36,17 @@ k8s_network_addon_ports:
 #    update_kube_config: true
 
 # The Ceph CSI can be activated by enabling this section
-#k8s_ceph_csi_enable: true
-#k8s_ceph_csi_release: v2.0.1
-#k8s_ceph_csi_id: lab-ceph
-#k8s_ceph_csi_secret_userid: kubernetes
-#k8s_ceph_csi_secret_userkey: AQC73I5eDKLgLBAACUqUv3qbHBqtmwG1aK8MJw==
-#k8s_ceph_csi_clusterid: f5042dcf-f02f-4e47-a4fa-d4acb614c94a
-#k8s_ceph_csi_pool: kubepool
-#k8s_ceph_csi_monitors:
-#  - 192.168.122.11:6789
-#  - 192.168.122.12:6789
-#  - 192.168.122.13:6789
+k8s_ceph_csi_enable: true
+k8s_ceph_csi_namespace: ceph-csi
+k8s_ceph_csi_id: lab-ceph
+k8s_ceph_csi_secret_userid: kubernetes
+k8s_ceph_csi_secret_userkey: AQAWvU5jjBHSGhAAuAXtHFt0h05B5J/VHERGOA==
+k8s_ceph_csi_clusterid: d046bbb0-4ee4-11ed-8f6f-525400f292ff
+k8s_ceph_csi_pool: kubepool
+k8s_ceph_csi_monitors:
+  - 192.168.122.11:6789
+  - 192.168.122.12:6789
+  - 192.168.122.13:6789
 
 k8s_metallb_enable: true
 k8s_metallb_pools:
