@@ -39,7 +39,6 @@ k8s_network_addon_ports:
 
 # The Ceph CSI can be activated by enabling this section
 k8s_ceph_csi_enable: true
-k8s_ceph_csi_namespace: ceph-csi
 k8s_ceph_csi_id: lab-ceph
 k8s_ceph_csi_secret_userid: kubernetes
 k8s_ceph_csi_secret_userkey: AQAWvU5jjBHSGhAAuAXtHFt0h05B5J/VHERGOA==
