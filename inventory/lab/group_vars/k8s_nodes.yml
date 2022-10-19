@@ -25,17 +25,16 @@ k8s_network_addon_ports:
   - 8472/udp
 
 # Users can be created by enabling k8s_users variable
-#k8s_users:
-#  - name: pod-viewer
-#    namespace: default
-#    role_name: pod-viewer-role
-#    role_rules_apigroups: '""'
-#    role_rules_resources: '"pods","pods/exec","pods/log"'
-#    role_rules_verbs: '"*"'
-#    rolebinding_name: pod-viewer-rolebinding
-#    cert_path: 'kubernetes/pod-viewer/ssl'
-#    cert_expire_days: 3650
-#    update_kube_config: true
+k8s_users:
+  - name: pod-viewer
+    namespace: default
+    role_name: pod-viewer-role
+    role_rules_apigroups: '""'
+    role_rules_resources: '"pods","pods/exec","pods/log"'
+    role_rules_verbs: '"*"'
+    rolebinding_name: pod-viewer-rolebinding
+    cert_expire_days: 3650
+    update_kube_config: true
 
 # The Ceph CSI can be activated by enabling this section
 k8s_ceph_csi_enable: true
