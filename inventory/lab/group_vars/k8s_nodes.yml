@@ -1,3 +1,5 @@
+k8s_cluster_name: kubelab
+
 k8s_master_node: kubernetes-1
 k8s_master_port: 6443
 k8s_master_cert_key: "91bded725a628a081d74888df8745172ed842fe30c7a3898b3c63ca98c7226fd"
