@@ -26,6 +26,9 @@ k8s_network_addon_ports:
   - 8285/udp
   - 8472/udp
 
+# Enable dashboard
+k8s_dashboard_enable: true
+
 # Users can be created by enabling k8s_users variable
 k8s_users:
   - name: pod-viewer
