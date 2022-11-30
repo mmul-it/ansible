@@ -71,6 +71,11 @@ k8s_ingress_nginx_services:
       - name: port-2
         port: 443
         protocol: TCP
+      selector:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/instance: ingress-nginx
+        app.kubernetes.io/name: ingress-nginx
+
 
 k8s_cert_manager_enable: true
 k8s_cert_manager_issuers:
